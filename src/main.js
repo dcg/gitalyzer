@@ -4,6 +4,12 @@ const chalk = require('chalk');
 const _ = require('lodash');
 const { Git } = require('./git');
 
+function println(str) {
+  process.stdout.write(`${str}\n`);
+}
+function print(str) {
+  process.stdout.write(str);
+}
 function sortObject(obj) {
   return _(obj)
     .toPairs()
@@ -13,7 +19,8 @@ function sortObject(obj) {
 }
 
 async function main() {
-  const gitClient = Git({ wdir: argv._[0], useName: true });
+  console.log(argv);
+  const gitClient = Git({ wdir: argv.repo, useName: !argv.email });
   const ownership = await gitClient.codeOwnership();
   const sum = {};
   ownership
@@ -27,30 +34,32 @@ async function main() {
   const sortedSum = sortObject(sum);
 
   ownership.forEach(ow => {
-    console.log('\n');
-    console.log(chalk.bold(ow.filename));
+    println('\n');
+    println(chalk.bold(ow.filename));
     const sortedCount = sortObject(ow.count);
     Object.keys(sortedCount).forEach(c => {
-      console.log(`\t${chalk.yellow(c)}: ${chalk.bold(sortedCount[c])}`);
+      println(`\t${chalk.yellow(c)}: ${chalk.bold(sortedCount[c])}`);
     });
   });
 
-  console.log('\n\n');
-  console.log(chalk.black.bgGreen('<<SUMMARY>>'));
-  console.log('\n');
+  println('\n\n');
+  println(chalk.black.bgGreen('<<SUMMARY>>'));
+  println('\n');
 
   Object.keys(sortedSum).forEach(s => {
-    console.log(`${chalk.yellow(s)}: ${chalk.bold(sum[s])}`);
+    println(`${chalk.yellow(s)}: ${chalk.bold(sum[s])}`);
   });
+
+  await gitClient.commiters();
 }
 
 const bootstrap = function() {
   figlet('G i t A l y z e r', (err, data) => {
     if (err) {
-      console.log('Something went wrong...');
+      println('Something went wrong...');
       return;
     }
-    console.log(data);
+    println(data);
     main();
   });
 };

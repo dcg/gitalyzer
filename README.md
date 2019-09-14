@@ -6,4 +6,4 @@ npm install
 
 # How to run
 
-npm start -- ./path/to/git/repo
+npm start -- [--email] --repo ./path/to/git/repo
