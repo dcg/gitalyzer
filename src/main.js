@@ -1,8 +1,16 @@
 const figlet = require('figlet');
 const argv = require('minimist')(process.argv.slice(2));
 const chalk = require('chalk');
-
+const _ = require('lodash');
 const { Git } = require('./git');
+
+function sortObject(obj) {
+  return _(obj)
+    .toPairs()
+    .orderBy([1], 'desc')
+    .fromPairs()
+    .value();
+}
 
 async function main() {
   const gitClient = Git({ wdir: argv._[0], useName: true });
@@ -16,12 +24,14 @@ async function main() {
         sum[a] = (sum[a] || 0) + oo[a];
       });
     });
+  const sortedSum = sortObject(sum);
 
   ownership.forEach(ow => {
     console.log('\n');
     console.log(chalk.bold(ow.filename));
-    Object.keys(ow.count).forEach(c => {
-      console.log(`\t${chalk.yellow(c)}: ${chalk.bold(ow.count[c])}`);
+    const sortedCount = sortObject(ow.count);
+    Object.keys(sortedCount).forEach(c => {
+      console.log(`\t${chalk.yellow(c)}: ${chalk.bold(sortedCount[c])}`);
     });
   });
 
@@ -29,7 +39,7 @@ async function main() {
   console.log(chalk.black.bgGreen('<<SUMMARY>>'));
   console.log('\n');
 
-  Object.keys(sum).forEach(s => {
+  Object.keys(sortedSum).forEach(s => {
     console.log(`${chalk.yellow(s)}: ${chalk.bold(sum[s])}`);
   });
 }
