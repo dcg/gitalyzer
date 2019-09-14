@@ -1,0 +1,2 @@
+# gitalyzer
+Analyze git history
