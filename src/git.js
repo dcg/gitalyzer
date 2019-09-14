@@ -1,7 +1,7 @@
 const simpleGit = require('simple-git/promise');
 const _ = require('lodash');
 
-function Git({ wdir, useName }) {
+function Git({ wdir, useName, ignoredFiles, ignoredPattern }) {
   const git = simpleGit(wdir);
   function countAuthors(filename) {
     const filterAuthorRx = useName ? /^author / : /^author-mail/;
@@ -32,9 +32,29 @@ function Git({ wdir, useName }) {
     return _.countBy(names);
   }
 
+  async function changesAllTime() {
+    const log = await git.log({ '--stat': null });
+    const changes = log.all.map(commit => {
+      if (!commit || !commit.diff) return { unknown: 0 };
+      let { files } = commit.diff;
+      files = files.filter(f => ignoredFiles.indexOf(f.file) === -1);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const pattern of ignoredPattern) {
+        files = files.filter(f => !f.file.match(pattern));
+      }
+      files = files.filter(f => ignoredFiles.indexOf(f.file) === -1);
+
+      const changesPerCommit = files.reduce((a, b) => a + b.changes, 0);
+      return {
+        [useName ? commit.author_name : commit.author_email]: changesPerCommit
+      };
+    });
+    return changes;
+  }
   return {
     codeOwnership,
-    committer
+    committer,
+    changesAllTime
   };
 }
 
