@@ -50,7 +50,15 @@ async function main() {
     println(`${chalk.yellow(s)}: ${chalk.bold(sum[s])}`);
   });
 
-  await gitClient.commiters();
+  const comitters = await gitClient.committer();
+  const sortedComitters = sortObject(comitters);
+  println('\n\n');
+  println(chalk.black.bgGreen('<<COMMITS>>'));
+  println('\n');
+
+  Object.keys(sortedComitters).forEach(s => {
+    println(`${chalk.yellow(s)}: ${chalk.bold(sortedComitters[s])}`);
+  });
 }
 
 const bootstrap = function() {

@@ -26,12 +26,15 @@ function Git({ wdir, useName }) {
       .then(s => s.split('\n').filter(l => l.length > 1));
     return Promise.all(files.map(countAuthors));
   }
-  async function commiters() {
-    return git.log();
+  async function committer() {
+    const log = await git.log();
+    const names = log.all.map(x => (useName ? x.author_name : x.author_email));
+    return _.countBy(names);
   }
 
   return {
-    codeOwnership
+    codeOwnership,
+    committer
   };
 }
 
