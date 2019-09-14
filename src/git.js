@@ -35,7 +35,12 @@ function Git({ wdir, useName, ignoredFiles, ignoredPattern }) {
   async function changesAllTime() {
     const log = await git.log({ '--stat': null });
     const changes = log.all.map(commit => {
-      if (!commit || !commit.diff) return { unknown: 0 };
+      if (!commit || !commit.diff) {
+        // this is a e.g. a merge, lets ignore
+        return {
+          [`[MERGE] ${useName ? commit.author_name : commit.author_email}`]: 1
+        };
+      }
       let { files } = commit.diff;
       files = files.filter(f => ignoredFiles.indexOf(f.file) === -1);
       // eslint-disable-next-line no-restricted-syntax
