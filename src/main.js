@@ -5,7 +5,7 @@ const _ = require('lodash');
 const { Git } = require('./git');
 
 const ignoredFiles = ['package.json', '.gitignore', 'package-lock.json'];
-const ignoredPattern = [/.*\.md$/];
+const ignoredPattern = [/.*\.md$/, /^\./];
 
 function println(str) {
   process.stdout.write(`${str}\n`);
@@ -28,8 +28,19 @@ async function main() {
     ignoredFiles,
     ignoredPattern
   });
-  const ownership = await gitClient.codeOwnership();
+  let ownership = await gitClient.codeOwnership();
   const sum = {};
+  ownership = ownership
+    .filter(res => {
+      return ignoredFiles.indexOf(res.filename) === -1;
+    })
+    .filter(res => {
+      const bools = ignoredPattern.map(
+        pattern => !!res.filename.match(pattern)
+      );
+      const x = bools.reduce((a, b) => a || b, false);
+      return !x;
+    });
   ownership
     .map(obj => obj.count)
     .forEach(oo => {
