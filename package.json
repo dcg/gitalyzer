@@ -27,7 +27,7 @@
     "configstore": "^5.0.0",
     "figlet": "^1.2.4",
     "lodash": "^4.17.15",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.2",
     "simple-git": "^1.126.0"
   }
 }
