@@ -18,6 +18,8 @@ module.exports = {
     sourceType: 'module',
   },
   rules: {
-    "prettier/prettier": ["error"]
+    "prettier/prettier": ["error"],
+    'import/extensions': ['error', 'always'],
   },
+ 
 };

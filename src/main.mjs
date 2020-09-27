@@ -1,20 +1,19 @@
-const figlet = require('figlet');
-const argv = require('minimist')(process.argv.slice(2));
-const chalk = require('chalk');
-const _ = require('lodash');
-const { Git } = require('./git');
+import figlet from 'figlet';
+import minimist from 'minimist';
+import chalk from 'chalk';
+import lodash from 'lodash';
+import Git from './git.mjs';
 
+const argv = minimist(process.argv.slice(2));
 const ignoredFiles = ['package.json', '.gitignore', 'package-lock.json'];
 const ignoredPattern = [/.*\.md$/, /^\./];
 
 function println(str) {
   process.stdout.write(`${str}\n`);
 }
-function print(str) {
-  process.stdout.write(str);
-}
+
 function sortObject(obj) {
-  return _(obj)
+  return lodash(obj)
     .toPairs()
     .orderBy([1], 'desc')
     .fromPairs()
@@ -22,6 +21,7 @@ function sortObject(obj) {
 }
 
 async function main() {
+  console.log(argv.repo)
   const gitClient = Git({
     wdir: argv.repo,
     useName: !argv.email,
@@ -96,7 +96,7 @@ async function main() {
   });
 }
 
-const bootstrap = function() {
+const bootstrap = function bootstrap() {
   figlet('G i t A l y z e r', (err, data) => {
     if (err) {
       println('Something went wrong...');

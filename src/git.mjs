@@ -1,5 +1,5 @@
-const simpleGit = require('simple-git/promise');
-const _ = require('lodash');
+import simpleGit from 'simple-git';
+import lodash from 'lodash';
 
 function Git({ wdir, useName, ignoredFiles, ignoredPattern }) {
   const git = simpleGit(wdir);
@@ -13,7 +13,7 @@ function Git({ wdir, useName, ignoredFiles, ignoredPattern }) {
           .filter(l => l.match(filterAuthorRx))
           .map(l => l.replace(filterAuthorRx, ''))
       )
-      .then(authors => _.countBy(authors))
+      .then(authors => lodash.countBy(authors))
       .then(count => ({ filename, count }))
       .catch(e => {
         console.error(`Coudn't process file:  ${filename}`, e);
@@ -29,7 +29,7 @@ function Git({ wdir, useName, ignoredFiles, ignoredPattern }) {
   async function committer() {
     const log = await git.log();
     const names = log.all.map(x => (useName ? x.author_name : x.author_email));
-    return _.countBy(names);
+    return lodash.countBy(names);
   }
 
   async function changesAllTime() {
@@ -63,6 +63,4 @@ function Git({ wdir, useName, ignoredFiles, ignoredPattern }) {
   };
 }
 
-module.exports = {
-  Git
-};
+export default Git;
