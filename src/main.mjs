@@ -21,7 +21,7 @@ function sortObject(obj) {
 }
 
 async function main() {
-  console.log(argv.repo)
+  console.log(argv.repo);
   const gitClient = Git({
     wdir: argv.repo,
     useName: !argv.email,
